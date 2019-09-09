@@ -1,7 +1,7 @@
 {
   "name": "react-native-statusbar-alert-hooks",
   "version": "0.4.1",
-  "description": "A status bar alert (e.g. in-call, recording, navigating) for React Native",
+  "description": "A status bar alert for React Native",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
