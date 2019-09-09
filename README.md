@@ -19,8 +19,6 @@ A status bar alert (e.g. in-call, recording, navigating) for React Native
 />
 ```
 
-![basic](screenshots/react-native-statusbar-alert.mov.gif)
-
 ### Pulse
 
 ```js
@@ -32,8 +30,6 @@ A status bar alert (e.g. in-call, recording, navigating) for React Native
   pulse="background"
 />
 ```
-
-![pulse](screenshots/react-native-statusbar-alert-pulse.mov.gif)
 
 ### Press
 
@@ -91,4 +87,4 @@ See the [example](/example) directory for a complete example.
 
 ## Example app
 
-See the [ReactNativeStatusBarAlertExample](https://github.com/plamworapot/react-native-statusbar-alert-hooks/tree/master/example) directory for an example React Native app using react-native-statusbar-alert-hooks.
+See the [example](https://github.com/plamworapot/react-native-statusbar-alert-hooks/tree/master/example) directory for an example React Native app using react-native-statusbar-alert-hooks.
