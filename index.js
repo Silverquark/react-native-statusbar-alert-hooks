@@ -1,43 +1,74 @@
-import React, { Component } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
 	Animated,
-	InteractionManager,
 	Platform,
 	StatusBar,
-	StyleSheet,
-	Text,
-	TouchableHighlight,
 	TouchableOpacity,
-	View,
 	Dimensions
 } from 'react-native';
 
-class StatusBarAlert extends Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			height: new Animated.Value(0),
-			opacity: new Animated.Value(0),
-			pulse: new Animated.Value(0)
-		};
-		this.timer = null;
+
+const StatusBarAlert = (props) => {
+	const [height,setHeight] = useState(new Animated.Value(0))
+	const [opacity,setOpacity] = useState(new Animated.Value(0))
+	const [pulse,setPulse] = useState(new Animated.Value(0))
+	const [preVisible, setPreVisible] = useState(null);
+
+
+	if (props.visible !== preVisible) {
+		if (props.visible === true) {
+			// Show alert
+			requestAnimationFrame(() => {
+				Animated.parallel([
+					Animated.timing(height, {
+						toValue:
+							Platform.OS === 'ios'
+								? props.height +
+									(props.statusbarHeight || STATUS_BAR_HEIGHT)
+								: props.height,
+						duration: SLIDE_DURATION
+					}),
+					Animated.timing(opacity, {
+						toValue: 1,
+						duration: SLIDE_DURATION
+					})
+				]).start();
+			});
+		}
+		if (props.visible === false) {
+			// Hide alert
+			requestAnimationFrame(() => {
+				Animated.parallel([
+					Animated.timing(height, {
+						toValue: 0,
+						duration: SLIDE_DURATION
+					}),
+					Animated.timing(opacity, {
+						toValue: 0,
+						duration: SLIDE_DURATION
+					})
+				]).start();
+			});
+		}
+
+		setPreVisible(props.visible)
 	}
 
-	componentDidMount() {
-		if (this.props.visible === true) {
+	useEffect(() => {
+		if (props.visible === true) {
 			// Slide animation
 			requestAnimationFrame(() => {
 				Animated.parallel([
-					Animated.timing(this.state.height, {
+					Animated.timing(height, {
 						toValue:
 							Platform.OS === 'ios'
-								? this.props.height +
-									(this.props.statusbarHeight || STATUS_BAR_HEIGHT)
-								: this.props.height,
+								? props.height +
+									(props.statusbarHeight || STATUS_BAR_HEIGHT)
+								: props.height,
 						duration: SLIDE_DURATION
 					}),
-					Animated.timing(this.state.opacity, {
+					Animated.timing(opacity, {
 						toValue: 1,
 						duration: SLIDE_DURATION
 					})
@@ -45,114 +76,76 @@ class StatusBarAlert extends Component {
 			});
 		}
 		// Pulse animation
-		this.timer = setInterval(() => {
-			if (this.props.pulse) {
-				if (Math.round(this.state.pulse._value) === 1) {
-					Animated.timing(this.state.pulse, {
+		const timer = setInterval(() => {
+			if (props.pulse) {
+				if (Math.round(pulse._value) === 1) {
+					Animated.timing(pulse, {
 						toValue: 0,
 						duration: PULSE_DURATION
 					}).start();
 				} else {
-					Animated.timing(this.state.pulse, {
+					Animated.timing(pulse, {
 						toValue: 1,
 						duration: PULSE_DURATION
 					}).start();
 				}
 			}
 		}, PULSE_DURATION);
-	}
 
-	componentWillUnmount() {
-		clearInterval(this.timer);
-	}
-
-	componentWillReceiveProps(nextProps) {
-		if (nextProps.visible !== this.props.visible) {
-			if (nextProps.visible === true) {
-				// Show alert
-				requestAnimationFrame(() => {
-					Animated.parallel([
-						Animated.timing(this.state.height, {
-							toValue:
-								Platform.OS === 'ios'
-									? nextProps.height +
-										(this.props.statusbarHeight || STATUS_BAR_HEIGHT)
-									: nextProps.height,
-							duration: SLIDE_DURATION
-						}),
-						Animated.timing(this.state.opacity, {
-							toValue: 1,
-							duration: SLIDE_DURATION
-						})
-					]).start();
-				});
-			}
-			if (nextProps.visible === false) {
-				// Hide alert
-				requestAnimationFrame(() => {
-					Animated.parallel([
-						Animated.timing(this.state.height, {
-							toValue: 0,
-							duration: SLIDE_DURATION
-						}),
-						Animated.timing(this.state.opacity, {
-							toValue: 0,
-							duration: SLIDE_DURATION
-						})
-					]).start();
-				});
-			}
+		return () => {
+			clearInterval(timer)
 		}
-	}
+	},[])
 
-	render() {
-		const content = this.props.children || (
-			<Animated.Text
-				style={[
-					styles.text,
-					{
-						color: this.props.color || styles.text.color,
-						opacity: this.props.pulse === 'text' ? this.state.pulse : 1
-					}
-				]}
-				allowFontScaling={false}
+
+	const content = props.children || (
+		<Animated.Text
+			style={[
+				styles.text,
+				{
+					color: props.color || styles.text.color,
+					opacity: props.pulse === 'text' ? pulse : 1
+				}
+			]}
+			allowFontScaling={false}
+		>
+			{props.message}
+		</Animated.Text>
+	);
+	return (
+		<Animated.View
+			style={[
+				styles.view,
+				props.style,
+				{
+					height: height,
+					opacity: opacity,
+					backgroundColor:
+						props.pulse === 'background'
+							? pulse.interpolate({
+									inputRange: [0, 1],
+									outputRange: [
+										props.backgroundColor,
+										props.highlightColor ||
+											saturate(props.backgroundColor, SATURATION)
+									]
+								})
+							: props.backgroundColor
+				}
+			]}
+		>
+			<TouchableOpacity
+				style={[styles.touchableOpacity, props.style]}
+				onPress={props.onPress || null}
+				activeOpacity={ACTIVE_OPACITY}
 			>
-				{this.props.message}
-			</Animated.Text>
-		);
-		return (
-			<Animated.View
-				style={[
-					styles.view,
-					this.props.style,
-					{
-						height: this.state.height,
-						opacity: this.state.opacity,
-						backgroundColor:
-							this.props.pulse === 'background'
-								? this.state.pulse.interpolate({
-										inputRange: [0, 1],
-										outputRange: [
-											this.props.backgroundColor,
-											this.props.highlightColor ||
-												saturate(this.props.backgroundColor, SATURATION)
-										]
-									})
-								: this.props.backgroundColor
-					}
-				]}
-			>
-				<TouchableOpacity
-					style={[styles.touchableOpacity, this.props.style]}
-					onPress={this.props.onPress || null}
-					activeOpacity={ACTIVE_OPACITY}
-				>
-					{content}
-				</TouchableOpacity>
-			</Animated.View>
-		);
-	}
+				{content}
+			</TouchableOpacity>
+		</Animated.View>
+	);
 }
+
+
 const d = Dimensions.get("window");
 const isX = Platform.OS === "ios" && (d.height > 800 || d.width > 800) ? true : false;
 const iosStatusBarHeight = isX ? 30 : 20; // to prevent cut-off text on iPhone X devices 
