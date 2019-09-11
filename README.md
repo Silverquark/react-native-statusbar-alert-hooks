@@ -4,7 +4,7 @@ A status bar alert (e.g. in-call, recording, navigating) for React Native
 
 ## Install
 
-`npm install react-native-statusbar-alert --save` or `yarn add react-native-statusbar-alert`
+`npm install react-native-statusbar-alert-hooks --save` or `yarn add react-native-statusbar-alert-hooks`
 
 ## Usage
 
