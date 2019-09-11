@@ -1,6 +1,6 @@
 {
   "name": "react-native-statusbar-alert-hooks",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "A status bar alert for React Native",
   "main": "index.js",
   "scripts": {
