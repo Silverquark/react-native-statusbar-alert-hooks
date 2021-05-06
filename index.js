@@ -10,9 +10,9 @@ import {
 
 
 const StatusBarAlert = (props) => {
-	const [height,setHeight] = useState(new Animated.Value(0))
-	const [opacity,setOpacity] = useState(new Animated.Value(0))
-	const [pulse,setPulse] = useState(new Animated.Value(0))
+	const [height, setHeight] = useState(new Animated.Value(0))
+	const [opacity, setOpacity] = useState(new Animated.Value(0))
+	const [pulse, setPulse] = useState(new Animated.Value(0))
 	const [preVisible, setPreVisible] = useState(null);
 
 
@@ -25,13 +25,15 @@ const StatusBarAlert = (props) => {
 						toValue:
 							Platform.OS === 'ios'
 								? props.height +
-									(props.statusbarHeight || STATUS_BAR_HEIGHT)
+								(props.statusbarHeight || STATUS_BAR_HEIGHT)
 								: props.height,
-						duration: SLIDE_DURATION
+						duration: SLIDE_DURATION,
+						useNativeDriver: false
 					}),
 					Animated.timing(opacity, {
 						toValue: 1,
-						duration: SLIDE_DURATION
+						duration: SLIDE_DURATION,
+						useNativeDriver: false
 					})
 				]).start();
 			});
@@ -42,11 +44,13 @@ const StatusBarAlert = (props) => {
 				Animated.parallel([
 					Animated.timing(height, {
 						toValue: 0,
-						duration: SLIDE_DURATION
+						duration: SLIDE_DURATION,
+						useNativeDriver: false
 					}),
 					Animated.timing(opacity, {
 						toValue: 0,
-						duration: SLIDE_DURATION
+						duration: SLIDE_DURATION,
+						useNativeDriver: false
 					})
 				]).start();
 			});
@@ -64,13 +68,15 @@ const StatusBarAlert = (props) => {
 						toValue:
 							Platform.OS === 'ios'
 								? props.height +
-									(props.statusbarHeight || STATUS_BAR_HEIGHT)
+								(props.statusbarHeight || STATUS_BAR_HEIGHT)
 								: props.height,
-						duration: SLIDE_DURATION
+						duration: SLIDE_DURATION,
+						useNativeDriver: false
 					}),
 					Animated.timing(opacity, {
 						toValue: 1,
-						duration: SLIDE_DURATION
+						duration: SLIDE_DURATION,
+						useNativeDriver: false
 					})
 				]).start();
 			});
@@ -81,12 +87,14 @@ const StatusBarAlert = (props) => {
 				if (Math.round(pulse._value) === 1) {
 					Animated.timing(pulse, {
 						toValue: 0,
-						duration: PULSE_DURATION
+						duration: PULSE_DURATION,
+						useNativeDriver: false
 					}).start();
 				} else {
 					Animated.timing(pulse, {
 						toValue: 1,
-						duration: PULSE_DURATION
+						duration: PULSE_DURATION,
+						useNativeDriver: false
 					}).start();
 				}
 			}
@@ -95,7 +103,7 @@ const StatusBarAlert = (props) => {
 		return () => {
 			clearInterval(timer)
 		}
-	},[])
+	}, [])
 
 
 	const content = props.children || (
@@ -123,13 +131,13 @@ const StatusBarAlert = (props) => {
 					backgroundColor:
 						props.pulse === 'background'
 							? pulse.interpolate({
-									inputRange: [0, 1],
-									outputRange: [
-										props.backgroundColor,
-										props.highlightColor ||
-											saturate(props.backgroundColor, SATURATION)
-									]
-								})
+								inputRange: [0, 1],
+								outputRange: [
+									props.backgroundColor,
+									props.highlightColor ||
+									saturate(props.backgroundColor, SATURATION)
+								]
+							})
 							: props.backgroundColor
 				}
 			]}
@@ -158,23 +166,20 @@ const SATURATION = 0.9;
 
 const styles = {
 	view: {
-		height: Platform.OS === 'ios' ? STATUS_BAR_HEIGHT * 2 : STATUS_BAR_HEIGHT,
 		backgroundColor: saturate('#3DD84C', SATURATION)
 	},
 	touchableOpacity: {
 		flex: 1,
 		display: 'flex',
 		height: STATUS_BAR_HEIGHT,
-		justifyContent: 'flex-end',
+		justifyContent: 'center',
 		alignItems: 'center'
 	},
 	text: {
-		height: Platform.OS === 'ios' ? 20 : STATUS_BAR_HEIGHT,
 		fontSize: 14,
 		fontWeight: '400',
-		lineHeight: 20,
-		marginBottom: Platform.OS === 'ios' ? 4 : 0,
-		color: 'white'
+		color: 'white',
+		textAlign: 'center'
 	}
 };
 

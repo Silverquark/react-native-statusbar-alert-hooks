@@ -1,3 +1,10 @@
+This fork fixes some issues on Android Phones with notches and the 'useNativeDriver was now specified warning for react native > V0.62'.
+
+It also vertically centers the text inside the alertbar.
+
+**This has not been tested on iOS**
+
+
 # React Native Statusbar Alert
 
 A status bar alert (e.g. in-call, recording, navigating) for React Native
